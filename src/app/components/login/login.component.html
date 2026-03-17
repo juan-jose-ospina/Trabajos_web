@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="card">
+    <h1>Iniciar Sesión</h1>
+
+    <div class="campo">
+      <label>Email:</label>
+      <!-- Two-way Binding: [(ngModel)] sincroniza el input con la variable "email" del .ts -->
+      <input type="email" [(ngModel)]="email" placeholder="admin@mail.com" />
+    </div>
+
+    <div class="campo">
+      <label>Contraseña:</label>
+      <!-- Two-way Binding: [(ngModel)] sincroniza el input con la variable "password" del .ts -->
+      <input type="password" [(ngModel)]="password" placeholder="1234" />
+    </div>
+
+    <!-- Event Binding: (click) ejecuta el método login() del .ts al hacer clic -->
+    <!-- Property Binding: [disabled] enlaza la propiedad disabled con una condición del .ts -->
+    <button (click)="login()" [disabled]="email === '' || password === ''">Ingresar</button>
+
+    <!-- @if: muestra el párrafo solo si "mensaje" no está vacío (control de flujo Angular 17+) -->
+    @if (mensaje !== '') {
+      <!-- Interpolación: {{ }} muestra el valor de la variable "mensaje" del .ts -->
+      <p class="mensaje">{{ mensaje }}</p>
+    }
+
+    <p class="volver">
+      <!-- Event Binding: (click) ejecuta goToHome() para navegar a la página de inicio -->
+      <a (click)="goToHome()">← Volver al inicio</a>
+    </p>
+  </div>
+</div>
