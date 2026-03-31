@@ -1,0 +1,14 @@
+<div class="container">
+  <div class="card">
+    <!-- Interpolación: muestra el nombre del usuario logueado desde el getter -->
+    <h1>Bienvenido, {{ nombre }}!</h1>
+    <p>Has iniciado sesión correctamente.</p>
+
+    <div class="info">
+      <span class="badge">Sesión activa</span>
+    </div>
+
+    <!-- Event Binding: (click) ejecuta logout() del .ts -->
+    <button class="btn-logout" (click)="logout()">Cerrar Sesión</button>
+  </div>
+</div>

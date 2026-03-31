@@ -2,7 +2,17 @@
   <div class="navbar-brand">Mi App Angular</div>
   <ul class="navbar-links">
     <li><a routerLink="/home" routerLinkActive="active">Home</a></li>
-    <li><a routerLink="/login" routerLinkActive="active">Login</a></li>
-    <li><a routerLink="/register" routerLinkActive="active">Register</a></li> <!-- ← nueva línea -->
+
+    <!-- @if: muestra Login y Register solo si NO hay sesión activa -->
+    @if (!authService.isLoggedIn()) {
+      <li><a routerLink="/login" routerLinkActive="active">Login</a></li>
+      <li><a routerLink="/register" routerLinkActive="active">Register</a></li>
+    }
+
+    <!-- @if: muestra Dashboard y Logout solo si HAY sesión activa -->
+    @if (authService.isLoggedIn()) {
+      <li><a routerLink="/dashboard" routerLinkActive="active">Dashboard</a></li>
+      <li><a class="logout" (click)="logout()">Logout</a></li>
+    }
   </ul>
 </nav>

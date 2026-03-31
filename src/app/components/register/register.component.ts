@@ -1,89 +1,45 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  AbstractControl,
-  ValidationErrors,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-
-function passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
-  const password = group.get('password')?.value;
-  const confirm  = group.get('confirmPassword')?.value;
-  return password === confirm ? null : { passwordsMismatch: true };
-}
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
-  standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [FormsModule],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'],
+  styleUrl: './register.component.css',
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
+  private router = inject(Router);
+  private authService = inject(AuthService);
 
-  registerForm!: FormGroup;
-  isLoading    = false;
-  showPassword = false;
+  nombre: string = '';
+  email: string = '';
+  password: string = '';
+  confirmPassword: string = '';
+  mensaje: string = '';
+  exito: boolean = false;
 
-  constructor(
-    private fb:     FormBuilder,
-    private router: Router,
-  ) {}
-
-  ngOnInit(): void {
-    this.registerForm = this.fb.group(
-      {
-        firstName: ['', [Validators.required, Validators.minLength(2)]],
-        lastName:  ['', [Validators.required, Validators.minLength(2)]],
-        email:     ['', [Validators.required, Validators.email]],
-        password:  ['', [Validators.required, Validators.minLength(8)]],
-        confirmPassword: ['', Validators.required],
-        terms:     [false, Validators.requiredTrue],
-      },
-      { validators: passwordsMatchValidator },
-    );
-  }
-
-  
-  get firstName() { return this.registerForm.get('firstName'); }
-  get lastName()  { return this.registerForm.get('lastName');  }
-  get email()     { return this.registerForm.get('email');     }
-  get password()  { return this.registerForm.get('password'); }
-  async onSubmit(): Promise<void> {
-    if (this.registerForm.invalid) {
-      this.registerForm.markAllAsTouched();
+  register() {
+    if (this.password !== this.confirmPassword) {
+      this.mensaje = 'Las contraseñas no coinciden.';
+      this.exito = false;
       return;
     }
 
-    this.isLoading = true;
-
-    try {
-      const { firstName, lastName, email, password } = this.registerForm.value;
-
-
-      console.log('Registro exitoso:', { firstName, lastName, email });
-      await this.router.navigate(['/home']);
-    } catch (error) {
-      console.error('Error al registrar:', error);
-    } finally {
-      this.isLoading = false;
+    // AuthService guarda el usuario en su array interno
+    // Ese mismo usuario ya puede usarse para hacer login
+    const ok = this.authService.register(this.nombre, this.email, this.password);
+    if (ok) {
+      this.mensaje = `¡Registro exitoso! Bienvenido, ${this.nombre}.`;
+      this.exito = true;
+    } else {
+      this.mensaje = 'Ese email ya está registrado.';
+      this.exito = false;
     }
   }
 
-  loginWithGoogle(): void {
-    console.log('Login con Google');
-  }
-
-  loginWithGithub(): void {
-    console.log('Login con GitHub');
-  }
-
-  togglePassword(): void {
-    this.showPassword = !this.showPassword;
+  goToLogin() {
+    this.router.navigate(['/login']);
   }
 }

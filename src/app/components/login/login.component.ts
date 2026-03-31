@@ -1,37 +1,29 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule],       // <-- necesario para usar [(ngModel)]
+  imports: [FormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
-  // Propiedades que se enlazan con el HTML (Two-way binding con ngModel)
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
   email: string = '';
   password: string = '';
   mensaje: string = '';
 
-  constructor(private router: Router) {}
-
   login() {
-    // Validación básica
-    if (this.email === '' || this.password === '') {
-      this.mensaje = 'Por favor completá todos los campos.';
-      return;
-    }
-
-    // Credenciales de prueba (hardcodeadas para aprender)
-    if (this.email === 'admin@mail.com' && this.password === '1234') {
-      this.mensaje = '¡Login exitoso! Bienvenido.';
+    // Delega la validación al AuthService (no hardcodea credenciales aquí)
+    const user = this.authService.login(this.email, this.password);
+    if (user) {
+      this.router.navigate(['/dashboard']); // navega al dashboard si el login es exitoso
     } else {
       this.mensaje = 'Email o contraseña incorrectos.';
     }
-  }
-
-  goToHome() {
-    this.router.navigate(['/']);
   }
 }
