@@ -1,11 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -18,10 +18,9 @@ export class LoginComponent {
   mensaje: string = '';
 
   login() {
-    // Delega la validación al AuthService (no hardcodea credenciales aquí)
     const user = this.authService.login(this.email, this.password);
     if (user) {
-      this.router.navigate(['/dashboard']); // navega al dashboard si el login es exitoso
+      this.router.navigate(['/dashboard']);
     } else {
       this.mensaje = 'Email o contraseña incorrectos.';
     }

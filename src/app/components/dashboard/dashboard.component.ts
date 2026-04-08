@@ -1,6 +1,18 @@
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../services/auth.service';
+
+// Interface que representa cada imagen devuelta por la API de la NASA (APOD)
+interface ApodItem {
+  title: string;
+  explanation: string;
+  url: string;
+  date: string;
+  media_type: 'image' | 'video'; // la API puede devolver imágenes o videos
+}
+
+const API_KEY = 'inGIryyx91BuIfOFUbCGGJdVsDj9YHPi94pGgG5L';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,19 +21,19 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent {
-  // inject() -forma moderna de inyectar dependencias (Angular 14+)
-  // Reemplaza al constructor(private router: Router)
-  private router = inject(Router);
   private authService = inject(AuthService);
+  private http = inject(HttpClient);
 
-  // Getter: se recalcula cada vez que el template lo usa
-  // Accede al usuario logueado desde el servicio (singleton compartido)
+  // count=6 trae 6 imágenes aleatorias del archivo histórico de la NASA
+  // toSignal() convierte el Observable en Signal — Angular maneja la suscripción
+  apods = toSignal(
+    this.http.get<ApodItem[]>(
+      `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&count=6`
+    ),
+    { initialValue: [] }
+  );
+
   get nombre(): string {
     return this.authService.currentUser?.nombre ?? 'Usuario';
-  }
-
-  logout() {
-    this.authService.logout();        // limpia currentUser en el servicio
-    this.router.navigate(['/login']); // redirige al login
   }
 }

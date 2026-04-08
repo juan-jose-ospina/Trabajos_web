@@ -1,14 +1,39 @@
-<div class="container">
-  <div class="card">
-    <!-- Interpolación: muestra el nombre del usuario logueado desde el getter -->
+<div class="dashboard">
+
+  <div class="header">
     <h1>Bienvenido, {{ nombre }}!</h1>
-    <p>Has iniciado sesión correctamente.</p>
-
-    <div class="info">
-      <span class="badge">Sesión activa</span>
-    </div>
-
-    <!-- Event Binding: (click) ejecuta logout() del .ts -->
-    <button class="btn-logout" (click)="logout()">Cerrar Sesión</button>
   </div>
+
+  <h2>Astronomy Picture of the Day</h2>
+  <p class="api-info">Datos obtenidos de <strong>api.nasa.gov</strong></p>
+
+  <!-- @if: muestra mensaje mientras el signal está vacío (petición en curso) -->
+  @if (apods().length === 0) {
+    <p class="loading">Cargando imágenes de la NASA...</p>
+  }
+
+  <!-- @for: itera el signal apods() y renderiza una card por cada resultado -->
+  <div class="apod-grid">
+    @for (apod of apods(); track apod.date) {
+
+      <div class="apod-card">
+        <!-- Property Binding: [src] enlaza la URL con el atributo src del img -->
+        <!-- @if/@else: muestra imagen o placeholder según el tipo de media -->
+        @if (apod.media_type === 'image') {
+          <img [src]="apod.url" [alt]="apod.title" class="apod-img" />
+        } @else {
+          <div class="video-placeholder">Video no previsualizable</div>
+        }
+
+        <div class="apod-body">
+          <!-- Interpolación: muestra fecha, título y descripción -->
+          <span class="apod-date">{{ apod.date }}</span>
+          <h3>{{ apod.title }}</h3>
+          <p>{{ apod.explanation }}</p>
+        </div>
+      </div>
+
+    }
+  </div>
+
 </div>
